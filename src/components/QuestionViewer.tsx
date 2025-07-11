@@ -1,6 +1,5 @@
-
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, Building2, Calendar, TrendingUp, Percent } from 'lucide-react';
+import { Search, Filter, Building2, Calendar, TrendingUp, Percent, Moon, Sun } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -8,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
 import { mockCompanies, mockQuestions, timeframes, difficulties, allTopics, Question } from '@/data/mockData';
 
 const QuestionViewer = () => {
@@ -18,15 +18,34 @@ const QuestionViewer = () => {
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<'frequency' | 'acceptanceRate'>('frequency');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [solvedQuestions, setSolvedQuestions] = useState<Set<string>>(new Set());
+
+  // Toggle dark mode
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    document.documentElement.classList.toggle('dark');
+  };
+
+  // Toggle solved status for a question
+  const toggleSolved = (questionId: string) => {
+    const newSolved = new Set(solvedQuestions);
+    if (newSolved.has(questionId)) {
+      newSolved.delete(questionId);
+    } else {
+      newSolved.add(questionId);
+    }
+    setSolvedQuestions(newSolved);
+  };
 
   const filteredQuestions = useMemo(() => {
     let filtered = mockQuestions.filter(question => {
-      const matchesCompany = !selectedCompany || question.company === selectedCompany;
+      const matchesCompany = !selectedCompany || selectedCompany === 'all' || question.company === selectedCompany;
       const matchesTimeframe = question.timeframe === selectedTimeframe;
       const matchesSearch = !searchQuery || 
         question.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         question.topics.some(topic => topic.toLowerCase().includes(searchQuery.toLowerCase()));
-      const matchesDifficulty = !selectedDifficulty || question.difficulty === selectedDifficulty;
+      const matchesDifficulty = !selectedDifficulty || selectedDifficulty === 'all' || question.difficulty === selectedDifficulty;
       const matchesTopics = selectedTopics.length === 0 || 
         selectedTopics.every(topic => question.topics.includes(topic));
 
@@ -47,13 +66,13 @@ const QuestionViewer = () => {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'Easy':
-        return 'bg-green-100 text-green-800 hover:bg-green-200';
+        return 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-100';
       case 'Medium':
-        return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
+        return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900 dark:text-yellow-100';
       case 'Hard':
-        return 'bg-red-100 text-red-800 hover:bg-red-200';
+        return 'bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900 dark:text-red-100';
       default:
-        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+        return 'bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100';
     }
   };
 
@@ -70,10 +89,25 @@ const QuestionViewer = () => {
       <div className="container mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-foreground">Company Question Viewer</h1>
-          <p className="text-muted-foreground">
-            View and filter coding interview questions by company and timeframe
-          </p>
+          <div className="flex items-center justify-between">
+            <div className="flex-1" />
+            <div className="space-y-2">
+              <h1 className="text-4xl font-bold text-foreground">Company Question Viewer</h1>
+              <p className="text-muted-foreground">
+                View and filter coding interview questions by company and timeframe
+              </p>
+            </div>
+            <div className="flex-1 flex justify-end">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={toggleDarkMode}
+                className="ml-auto"
+              >
+                {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* Filters */}
@@ -213,6 +247,7 @@ const QuestionViewer = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-12">Solved</TableHead>
                     <TableHead>Title</TableHead>
                     <TableHead>Difficulty</TableHead>
                     <TableHead>Topics</TableHead>
@@ -229,8 +264,14 @@ const QuestionViewer = () => {
                 </TableHeader>
                 <TableBody>
                   {filteredQuestions.map(question => (
-                    <TableRow key={question.id} className="hover:bg-muted/50">
-                      <TableCell className="font-medium">
+                    <TableRow key={question.id} className={`hover:bg-muted/50 ${solvedQuestions.has(question.id) ? 'opacity-60' : ''}`}>
+                      <TableCell>
+                        <Checkbox
+                          checked={solvedQuestions.has(question.id)}
+                          onCheckedChange={() => toggleSolved(question.id)}
+                        />
+                      </TableCell>
+                      <TableCell className={`font-medium ${solvedQuestions.has(question.id) ? 'line-through text-muted-foreground' : ''}`}>
                         {question.title}
                       </TableCell>
                       <TableCell>
