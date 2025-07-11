@@ -96,7 +96,7 @@ const QuestionViewer = () => {
                     <SelectValue placeholder="Select company" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Companies</SelectItem>
+                    <SelectItem value="all">All Companies</SelectItem>
                     {mockCompanies.map(company => (
                       <SelectItem key={company.id} value={company.id}>
                         {company.name}
@@ -132,7 +132,7 @@ const QuestionViewer = () => {
                     <SelectValue placeholder="All difficulties" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Difficulties</SelectItem>
+                    <SelectItem value="all">All Difficulties</SelectItem>
                     {difficulties.map(difficulty => (
                       <SelectItem key={difficulty} value={difficulty}>
                         {difficulty}
@@ -201,7 +201,7 @@ const QuestionViewer = () => {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Questions ({filteredQuestions.length})</span>
-              {selectedCompany && (
+              {selectedCompany && selectedCompany !== 'all' && (
                 <Badge variant="secondary">
                   {mockCompanies.find(c => c.id === selectedCompany)?.name}
                 </Badge>
