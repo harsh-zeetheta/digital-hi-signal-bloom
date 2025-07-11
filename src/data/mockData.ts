@@ -1,4 +1,9 @@
 
+export interface Company {
+  id: string;
+  name: string;
+}
+
 export interface Question {
   id: string;
   title: string;
@@ -8,24 +13,46 @@ export interface Question {
   acceptanceRate: number;
   company: string;
   timeframe: string;
-  description?: string;
-}
-
-export interface Company {
-  id: string;
-  name: string;
-  logo?: string;
 }
 
 export const mockCompanies: Company[] = [
   { id: 'google', name: 'Google' },
-  { id: 'microsoft', name: 'Microsoft' },
+  { id: 'meta', name: 'Meta' },
   { id: 'amazon', name: 'Amazon' },
-  { id: 'facebook', name: 'Meta' },
+  { id: 'microsoft', name: 'Microsoft' },
   { id: 'apple', name: 'Apple' },
   { id: 'netflix', name: 'Netflix' },
   { id: 'uber', name: 'Uber' },
   { id: 'airbnb', name: 'Airbnb' },
+  { id: 'linkedin', name: 'LinkedIn' },
+  { id: 'twitter', name: 'Twitter' },
+  { id: 'salesforce', name: 'Salesforce' },
+  { id: 'adobe', name: 'Adobe' },
+  { id: 'oracle', name: 'Oracle' },
+  { id: 'tesla', name: 'Tesla' },
+  { id: 'spotify', name: 'Spotify' },
+];
+
+export const timeframes = ['30', '60', '90', 'all'];
+
+export const timeframeLabels: Record<string, string> = {
+  '30': 'Past 30 days',
+  '60': 'Past 60 days', 
+  '90': 'Past 90 days',
+  'all': 'All time'
+};
+
+export const difficulties = ['Easy', 'Medium', 'Hard'];
+
+export const allTopics = [
+  'Array', 'String', 'Hash Table', 'Dynamic Programming', 'Math', 'Sorting',
+  'Greedy', 'Depth-First Search', 'Binary Search', 'Database', 'Breadth-First Search',
+  'Tree', 'Matrix', 'Two Pointers', 'Binary Tree', 'Bit Manipulation', 'Heap (Priority Queue)',
+  'Stack', 'Graph', 'Prefix Sum', 'Simulation', 'Counting', 'Sliding Window',
+  'Union Find', 'Linked List', 'Ordered Set', 'Monotonic Stack', 'Number Theory',
+  'Trie', 'Segment Tree', 'Binary Indexed Tree', 'Hash Function', 'Rolling Hash',
+  'Shortest Path', 'Game Theory', 'Interactive', 'Data Stream', 'Geometry',
+  'Randomized', 'Reservoir Sampling', 'Rejection Sampling', 'Probability and Statistics'
 ];
 
 export const mockQuestions: Question[] = [
@@ -35,9 +62,9 @@ export const mockQuestions: Question[] = [
     difficulty: 'Easy',
     topics: ['Array', 'Hash Table'],
     frequency: 95,
-    acceptanceRate: 49.1,
+    acceptanceRate: 49.5,
     company: 'google',
-    timeframe: '2024',
+    timeframe: '30'
   },
   {
     id: '2',
@@ -45,29 +72,29 @@ export const mockQuestions: Question[] = [
     difficulty: 'Medium',
     topics: ['Linked List', 'Math', 'Recursion'],
     frequency: 78,
-    acceptanceRate: 38.2,
-    company: 'google',
-    timeframe: '2024',
+    acceptanceRate: 37.8,
+    company: 'meta',
+    timeframe: '30'
   },
   {
     id: '3',
     title: 'Longest Substring Without Repeating Characters',
     difficulty: 'Medium',
     topics: ['Hash Table', 'String', 'Sliding Window'],
-    frequency: 85,
-    acceptanceRate: 33.8,
-    company: 'microsoft',
-    timeframe: '2024',
+    frequency: 89,
+    acceptanceRate: 33.9,
+    company: 'amazon',
+    timeframe: '60'
   },
   {
     id: '4',
     title: 'Median of Two Sorted Arrays',
     difficulty: 'Hard',
     topics: ['Array', 'Binary Search', 'Divide and Conquer'],
-    frequency: 65,
-    acceptanceRate: 35.3,
-    company: 'amazon',
-    timeframe: '2024',
+    frequency: 67,
+    acceptanceRate: 36.2,
+    company: 'microsoft',
+    timeframe: '90'
   },
   {
     id: '5',
@@ -76,61 +103,57 @@ export const mockQuestions: Question[] = [
     topics: ['String', 'Dynamic Programming'],
     frequency: 72,
     acceptanceRate: 32.8,
-    company: 'facebook',
-    timeframe: '2024',
+    company: 'apple',
+    timeframe: 'all'
   },
   {
     id: '6',
-    title: 'Reverse Integer',
+    title: 'ZigZag Conversion',
     difficulty: 'Medium',
-    topics: ['Math'],
-    frequency: 68,
-    acceptanceRate: 26.8,
-    company: 'apple',
-    timeframe: '2024',
+    topics: ['String'],
+    frequency: 45,
+    acceptanceRate: 42.1,
+    company: 'netflix',
+    timeframe: '30'
   },
   {
     id: '7',
-    title: 'String to Integer (atoi)',
+    title: 'Reverse Integer',
     difficulty: 'Medium',
-    topics: ['String'],
-    frequency: 55,
-    acceptanceRate: 16.6,
-    company: 'netflix',
-    timeframe: '2024',
+    topics: ['Math'],
+    frequency: 58,
+    acceptanceRate: 26.8,
+    company: 'uber',
+    timeframe: '60'
   },
   {
     id: '8',
-    title: 'Container With Most Water',
+    title: 'String to Integer (atoi)',
     difficulty: 'Medium',
-    topics: ['Array', 'Two Pointers', 'Greedy'],
-    frequency: 88,
-    acceptanceRate: 54.1,
-    company: 'uber',
-    timeframe: '2024',
+    topics: ['String'],
+    frequency: 52,
+    acceptanceRate: 16.4,
+    company: 'airbnb',
+    timeframe: '90'
   },
   {
     id: '9',
-    title: '3Sum',
-    difficulty: 'Medium',
-    topics: ['Array', 'Two Pointers', 'Sorting'],
-    frequency: 82,
-    acceptanceRate: 32.1,
-    company: 'airbnb',
-    timeframe: '2024',
+    title: 'Palindrome Number',
+    difficulty: 'Easy',
+    topics: ['Math'],
+    frequency: 64,
+    acceptanceRate: 52.3,
+    company: 'linkedin',
+    timeframe: 'all'
   },
   {
     id: '10',
-    title: 'Valid Parentheses',
-    difficulty: 'Easy',
-    topics: ['String', 'Stack'],
-    frequency: 91,
-    acceptanceRate: 40.7,
-    company: 'google',
-    timeframe: '2023',
-  },
+    title: 'Regular Expression Matching',
+    difficulty: 'Hard',
+    topics: ['String', 'Dynamic Programming', 'Recursion'],
+    frequency: 41,
+    acceptanceRate: 27.9,
+    company: 'twitter',
+    timeframe: '30'
+  }
 ];
-
-export const timeframes = ['2024', '2023', '2022', '2021'];
-export const difficulties = ['Easy', 'Medium', 'Hard'];
-export const allTopics = Array.from(new Set(mockQuestions.flatMap(q => q.topics))).sort();

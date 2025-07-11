@@ -1,20 +1,22 @@
+
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, Building2, Calendar, TrendingUp, Percent, Moon, Sun } from 'lucide-react';
+import { Search, Filter, Calendar, TrendingUp, Percent, Moon, Sun } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
-import { mockCompanies, mockQuestions, timeframes, difficulties, allTopics, Question } from '@/data/mockData';
+import { mockCompanies, mockQuestions, timeframes, timeframeLabels, difficulties, Question } from '@/data/mockData';
+import CompanySearch from './CompanySearch';
+import TopicSelector from './TopicSelector';
 
 const QuestionViewer = () => {
-  const [selectedCompany, setSelectedCompany] = useState<string>('');
-  const [selectedTimeframe, setSelectedTimeframe] = useState<string>('2024');
+  const [selectedCompany, setSelectedCompany] = useState<string>('all');
+  const [selectedTimeframe, setSelectedTimeframe] = useState<string>('30');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<'frequency' | 'acceptanceRate'>('frequency');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -40,12 +42,12 @@ const QuestionViewer = () => {
 
   const filteredQuestions = useMemo(() => {
     let filtered = mockQuestions.filter(question => {
-      const matchesCompany = !selectedCompany || selectedCompany === 'all' || question.company === selectedCompany;
+      const matchesCompany = selectedCompany === 'all' || question.company === selectedCompany;
       const matchesTimeframe = question.timeframe === selectedTimeframe;
       const matchesSearch = !searchQuery || 
         question.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         question.topics.some(topic => topic.toLowerCase().includes(searchQuery.toLowerCase()));
-      const matchesDifficulty = !selectedDifficulty || selectedDifficulty === 'all' || question.difficulty === selectedDifficulty;
+      const matchesDifficulty = selectedDifficulty === 'all' || question.difficulty === selectedDifficulty;
       const matchesTopics = selectedTopics.length === 0 || 
         selectedTopics.every(topic => question.topics.includes(topic));
 
@@ -120,25 +122,10 @@ const QuestionViewer = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2">
-                  <Building2 className="h-4 w-4" />
-                  Company
-                </label>
-                <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select company" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Companies</SelectItem>
-                    {mockCompanies.map(company => (
-                      <SelectItem key={company.id} value={company.id}>
-                        {company.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <CompanySearch
+                selectedCompany={selectedCompany}
+                onCompanyChange={setSelectedCompany}
+              />
 
               <div className="space-y-2">
                 <label className="text-sm font-medium flex items-center gap-2">
@@ -150,9 +137,9 @@ const QuestionViewer = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {timeframes.map(year => (
-                      <SelectItem key={year} value={year}>
-                        {year}
+                    {timeframes.map(timeframe => (
+                      <SelectItem key={timeframe} value={timeframe}>
+                        {timeframeLabels[timeframe]}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -212,21 +199,10 @@ const QuestionViewer = () => {
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Topics</label>
-              <div className="flex flex-wrap gap-2">
-                {allTopics.map(topic => (
-                  <Badge
-                    key={topic}
-                    variant={selectedTopics.includes(topic) ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => toggleTopic(topic)}
-                  >
-                    {topic}
-                  </Badge>
-                ))}
-              </div>
-            </div>
+            <TopicSelector
+              selectedTopics={selectedTopics}
+              onTopicToggle={toggleTopic}
+            />
           </CardContent>
         </Card>
 
@@ -235,11 +211,18 @@ const QuestionViewer = () => {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Questions ({filteredQuestions.length})</span>
-              {selectedCompany && selectedCompany !== 'all' && (
-                <Badge variant="secondary">
-                  {mockCompanies.find(c => c.id === selectedCompany)?.name}
-                </Badge>
-              )}
+              <div className="flex items-center gap-2">
+                {selectedTimeframe && (
+                  <Badge variant="outline">
+                    {timeframeLabels[selectedTimeframe]}
+                  </Badge>
+                )}
+                {selectedCompany && selectedCompany !== 'all' && (
+                  <Badge variant="secondary">
+                    {mockCompanies.find(c => c.id === selectedCompany)?.name}
+                  </Badge>
+                )}
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
